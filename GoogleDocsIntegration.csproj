@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="key.p12" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="key.p12">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Apis" Version="1.55.0" />
+    <PackageReference Include="Google.Apis.Docs.v1" Version="1.55.0.2379" />
+    <PackageReference Include="Google.Apis.Drive.v3" Version="1.55.0.2397" />
+  </ItemGroup>
+
+</Project>
