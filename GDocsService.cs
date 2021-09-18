@@ -2,52 +2,26 @@
 using Google.Apis.Docs.v1;
 using Google.Apis.Docs.v1.Data;
 using Google.Apis.Services;
-using Google.Apis.Util.Store;
 using System.Collections.Generic;
 using System;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
-using System.Threading;
 using System.Threading.Tasks;
 using ADE.Dominio.Models;
 using Google.Apis.Drive.v3;
 
 namespace GoogleDocsIntegration
 {
-    class Program
+    public class GDocsService
     {
         // If modifying these scopes, delete your previously saved credentials
         // at ~/.credentials/docs.googleapis.com-dotnet-quickstart.json
-        static string[] Scopes = { DocsService.Scope.Documents, DocsService.Scope.Drive, DriveService.Scope.Drive };
-        static string serviceAccountEmail = "ade-service@assistente-de-estagio-326401.iam.gserviceaccount.com";
-        static string serviceAccountCredentialFilePath = "./key.p12";
+        public static string[] scopes = { DocsService.Scope.Documents, DocsService.Scope.Drive, DriveService.Scope.Drive };
+        public static string serviceAccountEmail = "ade-service@assistente-de-estagio-326401.iam.gserviceaccount.com";
+        public static string serviceAccountCredentialFilePath = "./key.p12";
         public static DocsService DocsService;
         public static DriveService DriveService;
-        static void Main(string[] args)
-        {
-            AuthenticateServiceAccount(serviceAccountEmail, serviceAccountCredentialFilePath, Scopes);
-
-            // Define request parameters.
-            String documentId = "1dpKtPyVwxHzCuSI1evWpBL-gmphH482Vy1neac4Netw";
-            DocumentsResource.GetRequest request = DocsService.Documents.Get(documentId);
-
-            // Prints the title of the requested doc:
-            // https://docs.google.com/document/d/195j9eDD3ccgjQRttHhJPymLJUCOUjs-jmwTrekvdjFE/edit
-            Document doc = request.Execute();
-            Console.WriteLine("The title of the doc is: {0}", doc.Title);
-
-            var mergedDoc = MergeTemplate(documentId, new List<Template>() { new Template("{{keywords}}", "DEFAULT") }).GetAwaiter().GetResult();
-
-            var exported = DriveService.Files.Export(mergedDoc.DocumentId, "application/pdf");
-            
-            using(Stream stream = new FileStream("./download", FileMode.OpenOrCreate))
-            {
-                exported.Download(stream);
-                var exportResult = exported.Execute();
-            }
-            Console.WriteLine();
-        }
-
+       
         /// <summary>
         /// Authenticating to Google using a Service account
         /// Documentation: https://developers.google.com/accounts/docs/OAuth2#serviceaccount
@@ -55,7 +29,7 @@ namespace GoogleDocsIntegration
         /// <param name="serviceAccountEmail">From Google Developer console https://console.developers.google.com</param>
         /// <param name="serviceAccountCredentialFilePath">Location of the .p12 or Json Service account key file downloaded from Google Developer console https://console.developers.google.com</param>
         /// <returns>AnalyticsService used to make requests against the Analytics API</returns>
-        static void AuthenticateServiceAccount(string serviceAccountEmail, string serviceAccountCredentialFilePath, string[] scopes)
+        public void AuthenticateServiceAccount()
         {
             try
             {
@@ -121,7 +95,13 @@ namespace GoogleDocsIntegration
             }
         }
 
-        public async static Task<Document> GetDocumentByID(string documentId)
+        public static Document GetDocumentByID(string documentId)
+        {
+            var document = DocsService.Documents.Get(documentId).Execute();
+            return document;
+        }
+
+        public async static Task<Document> GetDocumentByIDAsync(string documentId)
         {
             var document = await DocsService.Documents.Get(documentId).ExecuteAsync();
             return document;
@@ -134,7 +114,7 @@ namespace GoogleDocsIntegration
 
             Google.Apis.Drive.v3.Data.File targetFile = new Google.Apis.Drive.v3.Data.File();
             //This will be the body of the request so probably you would want to modify this
-            targetFile.Name = "Name of the new file";
+            targetFile.Name = document.Title;
             targetFile.CopyRequiresWriterPermission = false;
             
             var copyrequest = DriveService.Files.Get(documentId);
@@ -163,6 +143,24 @@ namespace GoogleDocsIntegration
 
             var result = DocsService.Documents.BatchUpdate(body, copy_result.Id).Execute();
             return await DocsService.Documents.Get(result.DocumentId).ExecuteAsync();
+        }
+
+        public Stream ExportPDF(string documentId)
+        {
+            var exported = DriveService.Files.Export(documentId, "application/pdf");
+
+            Stream stream = new MemoryStream();
+            exported.Download(stream);
+            return stream;
+        }
+
+        public async Task<Stream> ExportPDFAsync(string documentId)
+        {
+            var exported = DriveService.Files.Export(documentId, "application/pdf");
+
+            Stream stream = new MemoryStream();
+            await exported.DownloadAsync(stream);
+            return stream;
         }
     }
 }
