@@ -10,6 +10,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using ADE.Dominio.Models;
+using Google.Apis.Drive.v3;
 
 namespace GoogleDocsIntegration
 {
@@ -17,16 +18,17 @@ namespace GoogleDocsIntegration
     {
         // If modifying these scopes, delete your previously saved credentials
         // at ~/.credentials/docs.googleapis.com-dotnet-quickstart.json
-        static string[] Scopes = { DocsService.Scope.DocumentsReadonly, DocsService.Scope.Documents };
+        static string[] Scopes = { DocsService.Scope.Documents, DocsService.Scope.Drive, DriveService.Scope.Drive };
         static string serviceAccountEmail = "ade-service@assistente-de-estagio-326401.iam.gserviceaccount.com";
         static string serviceAccountCredentialFilePath = "./key.p12";
         public static DocsService DocsService;
+        public static DriveService DriveService;
         static void Main(string[] args)
         {
             AuthenticateServiceAccount(serviceAccountEmail, serviceAccountCredentialFilePath, Scopes);
 
             // Define request parameters.
-            String documentId = "15I3l7P-luymw-89zXcgcxo6zFYovyZ_jUh-tKxe6E4c";
+            String documentId = "1dpKtPyVwxHzCuSI1evWpBL-gmphH482Vy1neac4Netw";
             DocumentsResource.GetRequest request = DocsService.Documents.Get(documentId);
 
             // Prints the title of the requested doc:
@@ -34,6 +36,16 @@ namespace GoogleDocsIntegration
             Document doc = request.Execute();
             Console.WriteLine("The title of the doc is: {0}", doc.Title);
 
+            var mergedDoc = MergeTemplate(documentId, new List<Template>() { new Template("{{keywords}}", "DEFAULT") }).GetAwaiter().GetResult();
+
+            var exported = DriveService.Files.Export(mergedDoc.DocumentId, "application/pdf");
+            
+            using(Stream stream = new FileStream("./download", FileMode.OpenOrCreate))
+            {
+                exported.Download(stream);
+                var exportResult = exported.Execute();
+            }
+            Console.WriteLine();
         }
 
         /// <summary>
@@ -68,6 +80,11 @@ namespace GoogleDocsIntegration
                     DocsService = new DocsService(new BaseClientService.Initializer()
                     {
                         HttpClientInitializer = credential,
+                        ApplicationName = "Docs Service account Authentication Sample",
+                    });
+                    DriveService = new DriveService(new BaseClientService.Initializer()
+                    {
+                        HttpClientInitializer = credential,
                         ApplicationName = "Drive Service account Authentication Sample",
                     });
                 }
@@ -84,7 +101,12 @@ namespace GoogleDocsIntegration
                     DocsService = new DocsService(new BaseClientService.Initializer()
                     {
                         HttpClientInitializer = credential,
-                        ApplicationName = "Drive Authentication Sample",
+                        ApplicationName = "Docs Authentication Sample",
+                    }); 
+                    DriveService = new DriveService(new BaseClientService.Initializer()
+                    {
+                        HttpClientInitializer = credential,
+                        ApplicationName = "Drive Service account Authentication Sample",
                     });
                 }
                 else
@@ -99,19 +121,30 @@ namespace GoogleDocsIntegration
             }
         }
 
-        public async Task<Document> GetDocumentByID(string documentId)
+        public async static Task<Document> GetDocumentByID(string documentId)
         {
             var document = await DocsService.Documents.Get(documentId).ExecuteAsync();
             return document;
         }
 
-        public async Task<Document> MergeTemplate(string documentId, List<Template> templateValues)
+        public async static Task<Document> MergeTemplate(string documentId, List<Template> templateValues)
         {
             List<Request> requests = new List<Request>();
             var document = await DocsService.Documents.Get(documentId).ExecuteAsync();
-            DocsService.Documents.Create(document);
 
-            foreach(var template in templateValues)
+            Google.Apis.Drive.v3.Data.File targetFile = new Google.Apis.Drive.v3.Data.File();
+            //This will be the body of the request so probably you would want to modify this
+            targetFile.Name = "Name of the new file";
+            targetFile.CopyRequiresWriterPermission = false;
+            
+            var copyrequest = DriveService.Files.Get(documentId);
+            copyrequest.SupportsAllDrives = true;
+            
+            var cp_file = await copyrequest.ExecuteAsync();
+            
+            var copy_result = await DriveService.Files.Copy(targetFile, cp_file.Id).ExecuteAsync();
+
+            foreach (var template in templateValues)
             {
                 var repl = new Request();
                 var substrMatchCriteria = new SubstringMatchCriteria();
@@ -128,7 +161,7 @@ namespace GoogleDocsIntegration
 
             BatchUpdateDocumentRequest body = new BatchUpdateDocumentRequest { Requests = requests };
 
-            var result = DocsService.Documents.BatchUpdate(body, document.DocumentId).Execute();
+            var result = DocsService.Documents.BatchUpdate(body, copy_result.Id).Execute();
             return await DocsService.Documents.Get(result.DocumentId).ExecuteAsync();
         }
     }
