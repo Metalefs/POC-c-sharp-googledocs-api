@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "e5Y96wb5/KplD+eNIaGkwPvIMQClFyt+oOsLQQj9lGWT0wvk9JEa2ZHin0i/QnTnzYNAzoY3T+85evN7cwMy9Q==",
+  "dgSpecHash": "LDPKT8FoP5l3qxMo4teCjR6SuyATOwnXIE9OzRBkXdLdTMs+1RYjV19TxpqlAUJXzR+Fw5n9GXsgjYH4lsiAiw==",
   "success": true,
   "projectFilePath": "C:\\Users\\Hermes\\source\\repos\\GoogleDocsIntegration\\GoogleDocsIntegration.csproj",
   "expectedPackageFiles": [
@@ -9,6 +9,7 @@
     "C:\\Users\\Hermes\\.nuget\\packages\\google.apis.core\\1.55.0\\google.apis.core.1.55.0.nupkg.sha512",
     "C:\\Users\\Hermes\\.nuget\\packages\\google.apis.docs.v1\\1.55.0.2379\\google.apis.docs.v1.1.55.0.2379.nupkg.sha512",
     "C:\\Users\\Hermes\\.nuget\\packages\\google.apis.drive.v3\\1.55.0.2397\\google.apis.drive.v3.1.55.0.2397.nupkg.sha512",
+    "C:\\Users\\Hermes\\.nuget\\packages\\microsoft.netcore.targets.netframework\\4.6.0\\microsoft.netcore.targets.netframework.4.6.0.nupkg.sha512",
     "C:\\Users\\Hermes\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512"
   ],
   "logs": []

@@ -67,6 +67,9 @@
           "lib/netstandard2.0/Google.Apis.Drive.v3.dll": {}
         }
       },
+      "Microsoft.NETCore.Targets.NETFramework/4.6.0": {
+        "type": "package"
+      },
       "Newtonsoft.Json/13.0.1": {
         "type": "package",
         "compile": {
@@ -75,6 +78,23 @@
         "runtime": {
           "lib/netstandard2.0/Newtonsoft.Json.dll": {}
         }
+      },
+      "ADE.Dominio/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v5.0",
+        "dependencies": {
+          "Microsoft.NETCore.Targets.NETFramework": "4.6.0",
+          "Newtonsoft.Json": "13.0.1"
+        },
+        "compile": {
+          "bin/placeholder/ADE.Dominio.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/ADE.Dominio.dll": {}
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
       }
     }
   },
@@ -209,6 +229,18 @@
         "lib/netstandard2.0/Google.Apis.Drive.v3.xml"
       ]
     },
+    "Microsoft.NETCore.Targets.NETFramework/4.6.0": {
+      "sha512": "5VA/gjJfOoohzsKYq1Qg8SY6Yc70dV3+DIQtQPYTy3fMr0brXspKTj4vb0h7l8eDt/YCVzcTloIv5sfb7Ora2g==",
+      "type": "package",
+      "path": "microsoft.netcore.targets.netframework/4.6.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "microsoft.netcore.targets.netframework.4.6.0.nupkg.sha512",
+        "microsoft.netcore.targets.netframework.nuspec",
+        "runtime.json"
+      ]
+    },
     "Newtonsoft.Json/13.0.1": {
       "sha512": "ppPFpBcvxdsfUonNcvITKqLl3bqxWbDCZIzDWHzjpdAHRFfZe0Dw9HmA0+za13IdyrgJwpkDTDA9fHaxOrt20A==",
       "type": "package",
@@ -235,10 +267,16 @@
         "newtonsoft.json.nuspec",
         "packageIcon.png"
       ]
+    },
+    "ADE.Dominio/1.0.0": {
+      "type": "project",
+      "path": "../Assistente De Estágio/ADE.Dominio/ADE.Dominio.csproj",
+      "msbuildProject": "../Assistente De Estágio/ADE.Dominio/ADE.Dominio.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net5.0": [
+      "ADE.Dominio >= 1.0.0",
       "Google.Apis >= 1.55.0",
       "Google.Apis.Docs.v1 >= 1.55.0.2379",
       "Google.Apis.Drive.v3 >= 1.55.0.2397"
@@ -275,7 +313,11 @@
       "frameworks": {
         "net5.0": {
           "targetAlias": "net5.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\Hermes\\source\\repos\\Assistente De Estágio\\ADE.Dominio\\ADE.Dominio.csproj": {
+              "projectPath": "C:\\Users\\Hermes\\source\\repos\\Assistente De Estágio\\ADE.Dominio\\ADE.Dominio.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
