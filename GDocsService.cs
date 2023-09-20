@@ -7,8 +7,9 @@ using System;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using ADE.Dominio.Models;
 using Google.Apis.Drive.v3;
+using Google.Apis.Drive.v3.Data;
+using ADE.Domain.Models;
 
 namespace GoogleDocsIntegration
 {
@@ -35,7 +36,7 @@ namespace GoogleDocsIntegration
             {
                 if (string.IsNullOrEmpty(serviceAccountCredentialFilePath))
                     throw new Exception("Path to the service account credentials file is required.");
-                if (!File.Exists(serviceAccountCredentialFilePath))
+                if (!System.IO.File.Exists(serviceAccountCredentialFilePath))
                     throw new Exception("The service account credentials file does not exist at: " + serviceAccountCredentialFilePath);
                 if (string.IsNullOrEmpty(serviceAccountEmail))
                     throw new Exception("ServiceAccountEmail is required.");
@@ -95,19 +96,64 @@ namespace GoogleDocsIntegration
             }
         }
 
-        public static Document GetDocumentByID(string documentId)
+        public Document GetDocumentByID(string documentId)
         {
             var document = DocsService.Documents.Get(documentId).Execute();
             return document;
         }
 
-        public async static Task<Document> GetDocumentByIDAsync(string documentId)
+        public async Task<Document> GetDocumentByIDAsync(string documentId)
         {
             var document = await DocsService.Documents.Get(documentId).ExecuteAsync();
             return document;
         }
 
-        public async static Task<Document> MergeTemplate(string documentId, List<Template> templateValues)
+        public Google.Apis.Drive.v3.Data.File FindDocument(string fileId)
+        {
+            // Building the initial request.
+            var request = DriveService.Files.List();
+            //request.Q = $"{folderId} in parents";
+            var pageStreamer = new Google.Apis.Requests.PageStreamer<Google.Apis.Drive.v3.Data.File, FilesResource.ListRequest, Google.Apis.Drive.v3.Data.FileList, string>(
+                                               (req, token) => request.PageToken = token,
+                                               response => response.NextPageToken,
+                                               response => response.Files);
+
+
+            var allFiles = new Google.Apis.Drive.v3.Data.FileList();
+            allFiles.Files = new List<Google.Apis.Drive.v3.Data.File>();
+
+            foreach (var result in pageStreamer.Fetch(request))
+            {
+                if(result.Id == fileId)
+                    return result;
+            }
+
+            throw new Exception("File not found");
+        }
+
+        public FileList ListAllDocuments(string folderId)
+        {
+            // Building the initial request.
+            var request = DriveService.Files.List();
+            //request.Q = $"{folderId} in parents";
+            var pageStreamer = new Google.Apis.Requests.PageStreamer<Google.Apis.Drive.v3.Data.File, FilesResource.ListRequest, Google.Apis.Drive.v3.Data.FileList, string>(
+                                               (req, token) => request.PageToken = token,
+                                               response => response.NextPageToken,
+                                               response => response.Files);
+
+
+            var allFiles = new Google.Apis.Drive.v3.Data.FileList();
+            allFiles.Files = new List<Google.Apis.Drive.v3.Data.File>();
+
+            foreach (var result in pageStreamer.Fetch(request))
+            {
+                allFiles.Files.Add(result);
+            }
+
+            return allFiles;
+        }
+
+        public async Task<string> MergeTemplate(string documentId, List<UserDataKeyValue> templateValues)
         {
             List<Request> requests = new List<Request>();
             var document = await DocsService.Documents.Get(documentId).ExecuteAsync();
@@ -130,7 +176,7 @@ namespace GoogleDocsIntegration
                 var substrMatchCriteria = new SubstringMatchCriteria();
                 var replaceAlltext = new ReplaceAllTextRequest();
 
-                substrMatchCriteria.Text = template.Key;
+                substrMatchCriteria.Text = template.Requisito.Bookmark;
                 replaceAlltext.ReplaceText = template.Value;
 
                 replaceAlltext.ContainsText = substrMatchCriteria;
@@ -142,24 +188,28 @@ namespace GoogleDocsIntegration
             BatchUpdateDocumentRequest body = new BatchUpdateDocumentRequest { Requests = requests };
 
             var result = DocsService.Documents.BatchUpdate(body, copy_result.Id).Execute();
-            return await DocsService.Documents.Get(result.DocumentId).ExecuteAsync();
+            return result.DocumentId;
         }
 
-        public Stream ExportPDF(string documentId)
+        public Stream Export(string documentId, string mimeType)
         {
-            var exported = DriveService.Files.Export(documentId, "application/pdf");
+            var exported = DriveService.Files.Export(documentId, mimeType);
 
             Stream stream = new MemoryStream();
             exported.Download(stream);
+            var exportResult = exported.Execute();
+            stream.Position = 0;
             return stream;
         }
 
-        public async Task<Stream> ExportPDFAsync(string documentId)
+        public async Task<Stream> ExportAsync(string documentId, string mimeType)
         {
-            var exported = DriveService.Files.Export(documentId, "application/pdf");
+            var exported = DriveService.Files.Export(documentId, mimeType);
 
             Stream stream = new MemoryStream();
             await exported.DownloadAsync(stream);
+            var exportResult = await exported.ExecuteAsync();
+            stream.Position = 0;
             return stream;
         }
     }

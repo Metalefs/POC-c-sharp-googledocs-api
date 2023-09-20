@@ -1,0 +1,16 @@
+C:\Users\Hermes\source\repos\GoogleDocsIntegration\bin\Release\net5.0\key.p12
+C:\Users\Hermes\source\repos\GoogleDocsIntegration\bin\Release\net5.0\GoogleDocsIntegration.deps.json
+C:\Users\Hermes\source\repos\GoogleDocsIntegration\bin\Release\net5.0\GoogleDocsIntegration.dll
+C:\Users\Hermes\source\repos\GoogleDocsIntegration\bin\Release\net5.0\ref\GoogleDocsIntegration.dll
+C:\Users\Hermes\source\repos\GoogleDocsIntegration\bin\Release\net5.0\GoogleDocsIntegration.pdb
+C:\Users\Hermes\source\repos\GoogleDocsIntegration\bin\Release\net5.0\Domain.dll
+C:\Users\Hermes\source\repos\GoogleDocsIntegration\bin\Release\net5.0\Domain.pdb
+C:\Users\Hermes\source\repos\GoogleDocsIntegration\obj\Release\net5.0\GoogleDocsIntegration.csprojAssemblyReference.cache
+C:\Users\Hermes\source\repos\GoogleDocsIntegration\obj\Release\net5.0\GoogleDocsIntegration.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Hermes\source\repos\GoogleDocsIntegration\obj\Release\net5.0\GoogleDocsIntegration.AssemblyInfoInputs.cache
+C:\Users\Hermes\source\repos\GoogleDocsIntegration\obj\Release\net5.0\GoogleDocsIntegration.AssemblyInfo.cs
+C:\Users\Hermes\source\repos\GoogleDocsIntegration\obj\Release\net5.0\GoogleDocsIntegration.csproj.CoreCompileInputs.cache
+C:\Users\Hermes\source\repos\GoogleDocsIntegration\obj\Release\net5.0\GoogleDocsIntegration.csproj.CopyComplete
+C:\Users\Hermes\source\repos\GoogleDocsIntegration\obj\Release\net5.0\GoogleDocsIntegration.dll
+C:\Users\Hermes\source\repos\GoogleDocsIntegration\obj\Release\net5.0\ref\GoogleDocsIntegration.dll
+C:\Users\Hermes\source\repos\GoogleDocsIntegration\obj\Release\net5.0\GoogleDocsIntegration.pdb

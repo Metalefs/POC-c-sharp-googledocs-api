@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <OutputType>Library</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,13 +16,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Apis" Version="1.55.0" />
+    <PackageReference Include="Google.Apis" Version="1.56.0" />
     <PackageReference Include="Google.Apis.Docs.v1" Version="1.55.0.2379" />
     <PackageReference Include="Google.Apis.Drive.v3" Version="1.55.0.2397" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Assistente De Estágio\ADE.Dominio\ADE.Dominio.csproj" />
+    <ProjectReference Include="..\Assistente De Estágio\ADE.Dominio\Domain.csproj" />
   </ItemGroup>
 
 </Project>
